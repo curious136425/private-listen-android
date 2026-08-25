@@ -44,6 +44,12 @@ $env:GRADLE_USER_HOME='D:\PrivateListen\gradle-cache'
 .\gradlew.bat :app:testQaUnitTest :app:lintQa :app:assembleDebug :app:assembleQa :app:assembleQaAndroidTest
 ```
 
+可安装的优化 APK 使用 release 构建；当前私人侧载版本沿用本机 debug 签名，以便覆盖升级：
+
+```powershell
+.\gradlew.bat :app:assembleRelease
+```
+
 荣耀 Magic7 上的 ADB 需要关闭 libusb 后端：
 
 ```powershell
