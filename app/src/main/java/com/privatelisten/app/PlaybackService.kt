@@ -559,7 +559,7 @@ class PlaybackService : Service() {
     private fun createNotificationChannel() {
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(
             NotificationChannel(CHANNEL_ID, "后台朗读", NotificationManager.IMPORTANCE_LOW).apply {
-                description = "让私人听读在锁屏和切换应用后继续朗读"
+                description = "让听笺在锁屏和切换应用后继续朗读"
                 setSound(null, null)
             },
         )
@@ -604,7 +604,7 @@ class PlaybackService : Service() {
         }
         return Notification.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_app)
-            .setContentTitle(book?.title ?: "私人听读")
+            .setContentTitle(book?.title ?: "听笺")
             .setContentText(progress)
             .setContentIntent(openIntent)
             .setOngoing(isPlaying)

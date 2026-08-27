@@ -335,7 +335,7 @@ class MainActivity : ComponentActivity() {
                 .onSuccess { text ->
                     withContext(Dispatchers.Main) {
                         pendingBackupText = text
-                        exportLauncher.launch("私人听读-书库备份.json")
+        exportLauncher.launch("听笺-书库备份.json")
                     }
                 }
                 .onFailure { showToast("生成备份失败：${it.message}") }
@@ -491,7 +491,7 @@ private fun HomeScreen(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("私人听读", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text("听笺", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Button(onClick = onNew) { Text("新建 / 导入") }
             OutlinedButton(onClick = onSettings) { Text("设置") }
