@@ -2,7 +2,9 @@
     <style name="Theme.PrivateListen" parent="android:style/Theme.Material.Light.NoActionBar">
         <item name="android:fontFamily">sans</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">#F8F7F2</item>
-        <item name="android:statusBarColor">#F8F7F2</item>
+        <item name="android:navigationBarColor">#F7F5FA</item>
+        <item name="android:statusBarColor">#F7F5FA</item>
+        <item name="android:colorAccent">#8173B4</item>
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 </resources>

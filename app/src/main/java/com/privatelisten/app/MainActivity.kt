@@ -31,10 +31,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -44,15 +46,20 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.Typography
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
@@ -62,6 +69,40 @@ import java.text.DateFormat
 import java.util.Date
 
 private enum class Page { HOME, NEW, PLAYER, SETTINGS }
+
+private val ListenPurple = Color(0xFF8173B4)
+private val ListenPurpleDeep = Color(0xFF625394)
+private val ListenLavender = Color(0xFFF0EDF8)
+private val ListenBackground = Color(0xFFF7F5FA)
+private val ListenInk = Color(0xFF2D2936)
+private val ListenMuted = Color(0xFF756F80)
+private val ListenLine = Color(0xFFE2DDEB)
+private val ListenFogBlue = Color(0xFF8CAFC5)
+
+private val ListenColorScheme = lightColorScheme(
+    primary = ListenPurple,
+    onPrimary = Color.White,
+    primaryContainer = ListenLavender,
+    onPrimaryContainer = ListenPurpleDeep,
+    secondary = ListenFogBlue,
+    background = ListenBackground,
+    onBackground = ListenInk,
+    surface = Color.White,
+    onSurface = ListenInk,
+    surfaceVariant = Color(0xFFF3F0F7),
+    onSurfaceVariant = ListenMuted,
+    outline = ListenLine,
+)
+
+private val ListenTypography = Typography(
+    headlineMedium = TextStyle(fontSize = 34.sp, lineHeight = 42.sp, fontWeight = FontWeight.Bold),
+    headlineSmall = TextStyle(fontSize = 26.sp, lineHeight = 34.sp, fontWeight = FontWeight.SemiBold),
+    titleLarge = TextStyle(fontSize = 21.sp, lineHeight = 29.sp, fontWeight = FontWeight.SemiBold),
+    titleMedium = TextStyle(fontSize = 17.sp, lineHeight = 24.sp, fontWeight = FontWeight.SemiBold),
+    bodyLarge = TextStyle(fontSize = 16.sp, lineHeight = 25.sp),
+    bodyMedium = TextStyle(fontSize = 15.sp, lineHeight = 23.sp),
+    bodySmall = TextStyle(fontSize = 13.sp, lineHeight = 20.sp, color = ListenMuted),
+)
 
 class MainActivity : ComponentActivity() {
     private var page by mutableStateOf(Page.HOME)
@@ -151,8 +192,16 @@ class MainActivity : ComponentActivity() {
         probeSystemTts()
 
         setContent {
-            MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+            MaterialTheme(
+                colorScheme = ListenColorScheme,
+                typography = ListenTypography,
+                shapes = androidx.compose.material3.Shapes(
+                    small = RoundedCornerShape(12.dp),
+                    medium = RoundedCornerShape(18.dp),
+                    large = RoundedCornerShape(24.dp),
+                ),
+            ) {
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     PrivateListenApp(
                         page = page,
                         books = books,
@@ -487,32 +536,37 @@ private fun HomeScreen(
     val batteryIgnored = powerManager.isIgnoringBatteryOptimizations(context.packageName)
 
     Column(
-        modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(20.dp)
+        modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = 22.dp, vertical = 18.dp)
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Text("听笺", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Button(onClick = onNew) { Text("新建 / 导入") }
+        Text("听笺", style = MaterialTheme.typography.headlineMedium)
+        Text("把想读的内容，放进一段安静时间里", color = ListenMuted)
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Button(onClick = onNew, modifier = Modifier.weight(1f)) { Text("新建 / 导入") }
             OutlinedButton(onClick = onSettings) { Text("设置") }
         }
-        HorizontalDivider()
-        Text("听读列表 · ${books.size} 本", style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(2.dp))
+        Text("我的听读 · ${books.size} 本", style = MaterialTheme.typography.titleMedium)
         if (books.isEmpty()) {
             Text("还没有内容。可以粘贴文字、导入 TXT，或导入无 DRM 的 EPUB。")
         }
         books.forEach { book ->
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            ) {
+                Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
                     Text(book.title, style = MaterialTheme.typography.titleLarge)
-                    book.author?.let { Text("作者：$it") }
+                    book.author?.let { Text("作者：$it", color = ListenMuted) }
                     val status = when {
                         book.isFinished -> "已读完"
                         book.lastPlayedAt <= 0 -> "未开始"
                         else -> "听读中"
                     }
                     val type = if (book.sourceType == BookSourceType.EPUB.name) "EPUB" else "文字"
-                    Text("$status · $type · ${book.totalChapters} 章")
+                    Text("$status · $type · ${book.totalChapters} 章", color = ListenPurpleDeep, fontWeight = FontWeight.SemiBold)
                     if (book.lastPlayedAt > 0) {
                         Text(
                             "进度：第 ${book.currentChapter + 1} 章 · 第 ${book.currentSegment + 1} 段",
@@ -540,12 +594,12 @@ private fun HomeScreen(
                 }
             }
         }
-        HorizontalDivider()
+        HorizontalDivider(color = ListenLine)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedButton(onClick = onExport, enabled = books.isNotEmpty()) { Text("导出书库备份") }
             OutlinedButton(onClick = onRestore) { Text("恢复备份") }
         }
-        Text("数据库会在内容变更和暂停时自动生成内部备份；卸载前仍请手动导出。", style = MaterialTheme.typography.bodySmall)
+        Text("内容变更和暂停时会自动备份；卸载前仍建议手动导出。", style = MaterialTheme.typography.bodySmall)
         BackgroundProtectionCard(context, batteryIgnored)
     }
 
@@ -580,7 +634,10 @@ private fun HomeScreen(
 
 @Composable
 private fun BackgroundProtectionCard(context: Context, batteryIgnored: Boolean) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F5F8)),
+    ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("荣耀后台保护", fontWeight = FontWeight.SemiBold)
             Text(
@@ -645,7 +702,7 @@ private fun NewScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(20.dp)
+        modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = 22.dp, vertical = 18.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
@@ -719,7 +776,7 @@ private fun PlayerScreen(
     var chapterExpanded by remember { mutableStateOf(false) }
     var sleepExpanded by remember { mutableStateOf(false) }
     Column(
-        modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(20.dp)
+        modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = 22.dp, vertical = 18.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -747,8 +804,16 @@ private fun PlayerScreen(
             else "${snapshot.currentSegment + 1} / ${snapshot.totalSegments.coerceAtLeast(1)} 段",
             style = MaterialTheme.typography.titleMedium,
         )
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Text(snapshot.currentText.ifBlank { "正在准备朗读内容……" }, Modifier.padding(18.dp))
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        ) {
+            Text(
+                snapshot.currentText.ifBlank { "正在准备朗读内容……" },
+                Modifier.padding(horizontal = 22.dp, vertical = 24.dp),
+                style = MaterialTheme.typography.bodyLarge,
+            )
         }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             OutlinedButton(onClick = { onCommand(PlaybackContract.ACTION_PREVIOUS) }) { Text("上一段") }
@@ -785,7 +850,7 @@ private fun SettingsScreen(
     var voice by remember { mutableStateOf(settings.defaultVoiceName) }
     var expanded by remember { mutableStateOf(false) }
     Column(
-        modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(20.dp)
+        modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(horizontal = 22.dp, vertical = 18.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
